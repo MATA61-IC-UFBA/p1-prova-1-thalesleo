@@ -1,38 +1,64 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 extern int yylex();
-extern int yyparse();
 void yyerror(const char *msg);
-
 %}
 
-%token ERROR
+%expect 1
 
-%start program
+%token NUM
+%token ID
+%token STRING
+%token ADD
+%token SUB
+%token MUL
+%token DIV
+%token LPAREN
+%token RPAREN
+%token ASSIGN
+%token COMMA
+%token INVALID
+%token PRINT
+%token CONCAT
+%token LENGTH
+
+
+%right ASSIGN
+%left ADD SUB
+%left MUL DIV
+%nonassoc UMINUS
 
 %%
 
-/* programa */
-program
-: stmt_list 
-;
+program:
+       | program stmt
+       ;
 
-stmt_list
-: stmt
-| stmt_list stmt
-;
+stmt:
+      ID ASSIGN exp
+    | exp
+    | PRINT LPAREN arg_list RPAREN
+    ;
 
-stmt
-: IDENT ASSIGN expr
-| PRINT LPAREN exprlist RPAREN
-| expr
-;
+exp:
+      NUM
+    | STRING
+    | ID
+    | exp ADD exp
+    | exp SUB exp
+    | exp MUL exp
+    | exp DIV exp
+    | CONCAT LPAREN arg_list RPAREN
+    | LENGTH LPAREN exp RPAREN
+    | LPAREN exp RPAREN
+    | SUB exp %prec UMINUS
+    ;
 
-expr
-/* completar */
+arg_list:
+      exp
+    | arg_list COMMA exp
+    ;
 
 %%
-
