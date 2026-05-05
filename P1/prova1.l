@@ -3,17 +3,42 @@
 #include <stdlib.h>
 #include <string.h>
 
-void yyerror(const char *msg);
-int yylex();
+
 %}
+
 
 %option noyywrap
 
 %%
 
-/* copiar E2 e fazer as extensões */
+"concat"      { return CONCAT; }
+"length"      { return LENGTH; }
+"print"       { return PRINT; }
 
 
-.            { return ERROR; }
+[0-9]+(\.[0-9]+)?   { return NUM; }
+\"[^\"]*\"          { return STRING; }
+[a-zA-Z_][a-zA-Z0-9_]* { return ID; }
+
+[ \t\r]+      ;               // ignora espaços, tabs 
+
+\n            ;
+
+\\[^\n]*       ;
+"//".*         ;
+
+
+
+"+"           { return ADD; }
+"-"           { return SUB; }
+"*"           { return MUL; }
+"/"           { return DIV; }
+
+"="           { return ASSIGN; }
+"("           { return LPAREN; }
+")"           { return RPAREN; }
+","           { return COMMA; }
+
+.             { return INVALID; }
 
 %%
